@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Checkout</title>
+    <style>
+        /* This centers everything directly in the middle of the browser window */
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #8aca92;
+        }
+
+        /* This groups your form neatly into a column */
+        .center-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .fieldButtons {
+            display: inline-block; /* This allows vertical padding to work */
+            padding-bottom: 10px;
+        }
+        form {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="center-container">
+        <h2>Test Payment</h2>
+        
+        <!-- The form action will later point to your AWS API Gateway URL -->
+        <form action="#" method="POST">
+            
+            <label for="amountToCollect" class="fieldButtons">Amount to Collect (£):</label>
+            <br>
+            <input type="number" id="amountToCollect" name="amountToCollect" step="0.01" placeholder="e.g. 15.00" required>
+            <br><br>
+
+            <label for="orderNumber" class="fieldButtons">Order Number:</label>
+            <br>
+            <input type="text" id="orderNumber" name="orderNumber" placeholder="e.g. Test-Order-01" required>
+            <br><br>
+
+            <button type="submit">Submit</button>
+
+        </form>
+    </div>
+
+</body>
+</html>
