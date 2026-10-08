@@ -49,16 +49,14 @@
 
     <script>
         document.getElementById("paymentForm").addEventListener("submit", async function(event) {
-            // Stop the browser from leaving the page to prevent blank screens
             event.preventDefault(); 
 
-            // IMPORTANT: Replace this with your actual API Gateway URL ending in /pay
-            const apiUrl = "https://vyle17q52f.execute-api.eu-west-2.amazonaws.com/pay"; 
+            // Make sure this is your actual API Gateway URL ending in /pay
+            const apiUrl = "https://YOUR_API_ID.execute-api.eu-west-2.amazonaws.com/pay"; 
             
             const formData = new URLSearchParams(new FormData(this));
 
             try {
-                // Send the data invisibly in the background
                 const response = await fetch(apiUrl, {
                     method: "POST",
                     body: formData
@@ -66,8 +64,10 @@
 
                 const result = await response.json();
                 
-                // Read the JSON response and trigger a browser pop-up
-                if (result.cashflows_status === 200 || result.cashflows_status === 202) {
+                // If an action URL exists, redirect the browser to complete 3DS
+                if (result.action_url) {
+                    window.location.href = result.action_url;
+                } else if (result.cashflows_status === 200 || result.cashflows_status === 201) {
                     alert("Success! Payment approved.");
                 } else if (result.response && result.response.errorReport) {
                     alert("Payment Failed:\n" + result.response.errorReport.errors[0].message);
