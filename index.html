@@ -3,60 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Checkout</title>
+    <title>Test Payment</title>
     <style>
-        /* This centers everything directly in the middle of the browser window */
-        body {
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: Arial, sans-serif;
-            background-color: #8aca92;
-        }
-
-        /* This groups your form neatly into a column */
         .center-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: white;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .fieldButtons {
-            display: inline-block; /* This allows vertical padding to work */
-            padding-bottom: 10px;
+            margin: 50px auto;
+            width: 300px;
+            text-align: center;
+            font-family: Arial, sans-serif;
         }
         form {
             text-align: center;
         }
+        .fieldButtons {
+            padding-bottom: 10px;
+            display: inline-block; /* Ensures the padding is applied */
+        }
+        input {
+            margin-bottom: 15px;
+            padding: 8px;
+            width: 90%;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-
     <div class="center-container">
         <h2>Test Payment</h2>
         
-        <!-- The form action will later point to your AWS API Gateway URL -->
-        <form action="https://vyle17q52f.execute-api.eu-west-2.amazonaws.com/pay" method="POST">
+        <form id="paymentForm">
+            <label for="amountToCollect" class="fieldButtons">Amount to Collect (£):</label><br>
+            <input type="text" id="amountToCollect" name="amountToCollect" value="62.99"><br>
+
+            <label for="orderNumber" class="fieldButtons">Order Number:</label><br>
+            <input type="text" id="orderNumber" name="orderNumber" value="Flower Vase"><br>
             
-            <label for="amountToCollect" class="fieldButtons">Amount to Collect (£):</label>
-            <br>
-            <input type="number" id="amountToCollect" name="amountToCollect" step="0.01" placeholder="e.g. 15.00" required>
-            <br><br>
-
-            <label for="orderNumber" class="fieldButtons">Order Number:</label>
-            <br>
-            <input type="text" id="orderNumber" name="orderNumber" placeholder="e.g. Test-Order-01" required>
-            <br><br>
-
-            <button type="submit">Submit</button>
-
+            <button type="submit">Submit Payment</button>
         </form>
     </div>
 
+    <script>
+        document.getElementById("paymentForm").addEventListener("submit", async function(event) {
+            // Stop the browser from leaving the page to prevent blank screens
+            event.preventDefault(); 
+
+            // IMPORTANT: Replace this with your actual API Gateway URL ending in /pay
+            const apiUrl = "https://YOUR_API_ID.execute-api.eu-west-2.amazonaws.com/pay"; 
+            
+            const formData = new URLSearchParams(new FormData(this));
+
+            try {
+                // Send the data invisibly in the background
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                // Read the JSON response and trigger a browser pop-up
+                if (result.cashflows_status === 200 || result.cashflows_status === 202) {
+                    alert("Success! Payment approved.");
+                } else if (result.response && result.response.errorReport) {
+                    alert("Payment Failed:\n" + result.response.errorReport.errors[0].message);
+                } else {
+                    alert("Payment Error:\n" + JSON.stringify(result));
+                }
+                
+            } catch (error) {
+                alert("Network error: Could not reach the server.");
+            }
+        });
+    </script>
 </body>
 </html>
